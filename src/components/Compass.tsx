@@ -1,53 +1,135 @@
 interface CompassProps {
   rotation: number
+  deviceHeading: number
 }
 
-export default function Compass({ rotation }: CompassProps) {
+export default function Compass({ rotation, deviceHeading }: CompassProps) {
   return (
     <div className="relative mb-8">
       <div className="compass-container w-64 h-64 md:w-80 md:h-80 relative">
         {/* Pulse Effect */}
         <div className="absolute inset-0 rounded-full border-2 border-utopia-yellow pulse-ring" />
 
-        {/* Compass Face */}
-        <div className="absolute inset-4 rounded-full bg-gradient-to-br from-white to-gray-50 shadow-inner">
+        {/* Compass Face - This rotates with device */}
+        <div 
+          className="absolute inset-4 rounded-full bg-gradient-to-br from-white to-gray-50 shadow-inner transition-transform duration-300 ease-out"
+          style={{ transform: `rotate(${-deviceHeading}deg)` }}
+        >
           {/* Direction Markers */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
+            {/* Cardinal directions */}
             <text x="100" y="20" textAnchor="middle" fill="#1E3A52" className="text-sm font-bold">N</text>
             <text x="180" y="105" textAnchor="middle" fill="#1E3A52" className="text-sm font-bold">O</text>
             <text x="100" y="190" textAnchor="middle" fill="#1E3A52" className="text-sm font-bold">S</text>
             <text x="20" y="105" textAnchor="middle" fill="#1E3A52" className="text-sm font-bold">W</text>
 
-            {/* Degree Marks */}
-            <g stroke="#E8DE74" strokeWidth="2" opacity="0.5">
-              <line x1="100" y1="10" x2="100" y2="20" />
-              <line x1="100" y1="180" x2="100" y2="190" />
-              <line x1="10" y1="100" x2="20" y2="100" />
-              <line x1="180" y1="100" x2="190" y2="100" />
+            {/* Intermediate directions */}
+            <text x="150" y="50" textAnchor="middle" fill="#1E3A52" className="text-xs opacity-60">NO</text>
+            <text x="150" y="160" textAnchor="middle" fill="#1E3A52" className="text-xs opacity-60">SO</text>
+            <text x="50" y="160" textAnchor="middle" fill="#1E3A52" className="text-xs opacity-60">SW</text>
+            <text x="50" y="50" textAnchor="middle" fill="#1E3A52" className="text-xs opacity-60">NW</text>
+
+            {/* Degree marks around the edge */}
+            <g stroke="#1E3A52" strokeWidth="1" opacity="0.3">
+              {/* Major marks every 30 degrees */}
+              {[...Array(12)].map((_, i) => {
+                const angle = i * 30
+                const radian = (angle - 90) * Math.PI / 180
+                const x1 = 100 + 85 * Math.cos(radian)
+                const y1 = 100 + 85 * Math.sin(radian)
+                const x2 = 100 + 95 * Math.cos(radian)
+                const y2 = 100 + 95 * Math.sin(radian)
+                return (
+                  <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth="2" />
+                )
+              })}
+              
+              {/* Minor marks every 10 degrees */}
+              {[...Array(36)].map((_, i) => {
+                if (i % 3 !== 0) { // Skip major marks
+                  const angle = i * 10
+                  const radian = (angle - 90) * Math.PI / 180
+                  const x1 = 100 + 90 * Math.cos(radian)
+                  const y1 = 100 + 90 * Math.sin(radian)
+                  const x2 = 100 + 95 * Math.cos(radian)
+                  const y2 = 100 + 95 * Math.sin(radian)
+                  return (
+                    <line key={`minor-${i}`} x1={x1} y1={y1} x2={x2} y2={y2} />
+                  )
+                }
+                return null
+              })}
+            </g>
+
+            {/* Degree numbers */}
+            <g fill="#1E3A52" className="text-xs" opacity="0.5">
+              <text x="100" y="35" textAnchor="middle">0°</text>
+              <text x="165" y="105" textAnchor="middle">90°</text>
+              <text x="100" y="175" textAnchor="middle">180°</text>
+              <text x="35" y="105" textAnchor="middle">270°</text>
             </g>
           </svg>
+        </div>
 
-          {/* Compass Needle */}
-          <div 
-            className="absolute inset-0 flex items-center justify-center compass-needle"
-            style={{ transform: `rotate(${rotation}deg)` }}
-          >
-            <svg className="w-full h-full" viewBox="0 0 200 200">
-              <g transform="translate(100,100)">
-                {/* Main needle - minimalist */}
-                <path d="M 0,-55 L 0,40" stroke="#1E3A52" strokeWidth="4" strokeLinecap="round" />
-
-                {/* Arrow tip - triangle */}
-                <path d="M -12,-40 L 0,-55 L 12,-40" fill="none" stroke="#1E3A52" strokeWidth="4"
-                  strokeLinejoin="round" strokeLinecap="round" />
-
-                {/* Utopia accent - yellow dot */}
-                <circle cy="-25" r="3" fill="#E8DE74" />
-
-                {/* Center point */}
-                <circle r="6" fill="#E8DE74" stroke="#1E3A52" strokeWidth="2" />
+        {/* Compass Needle - Points to Utopia */}
+        <div 
+          className="absolute inset-4 flex items-center justify-center pointer-events-none"
+          style={{ 
+            transform: `rotate(${rotation}deg)`,
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          <svg className="w-full h-full" viewBox="0 0 200 200">
+            <g transform="translate(100,100)">
+              {/* Shadow for depth */}
+              <ellipse cx="0" cy="2" rx="8" ry="4" fill="black" opacity="0.2" />
+              
+              {/* Main needle body */}
+              <g filter="url(#needleShadow)">
+                {/* North half - pointing to Utopia */}
+                <path d="M 0,-65 L -8,-10 L 0,0 Z" fill="#1E3A52" />
+                <path d="M 0,-65 L 8,-10 L 0,0 Z" fill="#2B4C68" />
+                
+                {/* South half */}
+                <path d="M 0,0 L -8,10 L 0,50 Z" fill="#8B9DC3" />
+                <path d="M 0,0 L 8,10 L 0,50 Z" fill="#A5B3CC" />
               </g>
-            </svg>
+
+              {/* Utopia marker - yellow ring */}
+              <circle cy="-40" r="8" fill="none" stroke="#E8DE74" strokeWidth="3" />
+              <circle cy="-40" r="4" fill="#E8DE74" />
+
+              {/* Center cap */}
+              <circle r="10" fill="#1E3A52" />
+              <circle r="8" fill="#E8DE74" />
+              <circle r="5" fill="#1E3A52" />
+            </g>
+
+            {/* Filter for needle shadow */}
+            <defs>
+              <filter id="needleShadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3"/>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+
+        {/* Fixed North indicator */}
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+          <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+            N
+          </div>
+        </div>
+
+        {/* Utopia direction indicator */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          style={{ 
+            transform: `rotate(${rotation}deg)`
+          }}
+        >
+          <div className="absolute -top-8 bg-utopia-yellow text-utopia-dark text-xs px-3 py-1 rounded-full font-bold shadow-lg">
+            UTOPIA
           </div>
         </div>
       </div>

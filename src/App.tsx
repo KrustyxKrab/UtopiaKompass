@@ -167,7 +167,7 @@ function App() {
         )}
 
         {/* Compass */}
-        <Compass rotation={compassRotation} />
+        <Compass rotation={compassRotation} deviceHeading={deviceHeading} />
 
         {/* Info Cards */}
         <InfoCards distance={distance} bearing={bearing} />
