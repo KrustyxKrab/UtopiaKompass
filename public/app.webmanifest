@@ -1,6 +1,6 @@
 {
   "name": "Utopia Kompass",
-  "short_name": "Kompass",
+  "short_name": "Utopia Kompass",
   "description": "Finde deinen Weg zurück zum Utopia in Lüneburg.",
   "icons": [
     {
@@ -18,6 +18,6 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#FFFFFF",
+  "background_color": "#C8E0F4",
   "theme_color": "#C8E0F4"
 }
