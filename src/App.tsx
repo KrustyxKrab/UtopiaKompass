@@ -4,8 +4,8 @@ import InfoCards from './components/InfoCards'
 import './index.css'
 
 // Utopia Lüneburg coordinates
-const UTOPIA_LAT = 53.2464
-const UTOPIA_LON = 10.4115
+const UTOPIA_LAT = 53.2491271
+const UTOPIA_LON = 10.4060899
 
 function App() {
   const [distance, setDistance] = useState<string>('Warte auf GPS...')
