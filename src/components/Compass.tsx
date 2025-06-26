@@ -84,10 +84,10 @@ export default function Compass({ rotation, deviceHeading }: CompassProps) {
 
             {/* Degree numbers */}
             <g fill="#1E3A52" className="text-xs" opacity="0.5">
-              <text x="100" y="30" textAnchor="middle">0°</text>
+              <text x="100" y="40" textAnchor="middle">0°</text>
               <text x="160" y="105" textAnchor="middle">90°</text>
               <text x="100" y="170" textAnchor="middle">180°</text>
-              <text x="30" y="105" textAnchor="middle">270°</text>
+              <text x="40" y="105" textAnchor="middle">270°</text>
             </g>
           </svg>
         </div>
