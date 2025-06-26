@@ -140,7 +140,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <main className="flex-1 px-6 py-8 flex flex-col items-center justify-center relative">
+      <main className="flex-1 px-3 py-4 flex flex-col items-center justify-center relative">
         {/* Background Elements */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-200 rounded-full opacity-30 blur-2xl" />
         <div className="absolute bottom-20 right-10 w-40 h-40 bg-orange-200 rounded-full opacity-30 blur-2xl" />
