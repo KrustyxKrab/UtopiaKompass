@@ -87,7 +87,7 @@ export default function Compass({ rotation, deviceHeading }: CompassProps) {
               <text x="100" y="40" textAnchor="middle">0°</text>
               <text x="160" y="105" textAnchor="middle">90°</text>
               <text x="100" y="170" textAnchor="middle">180°</text>
-              <text x="40" y="105" textAnchor="middle">270°</text>
+              <text x="45" y="105" textAnchor="middle">270°</text>
             </g>
           </svg>
         </div>
