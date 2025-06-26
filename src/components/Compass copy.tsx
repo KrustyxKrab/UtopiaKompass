@@ -12,8 +12,11 @@ export default function Compass({ rotation, deviceHeading }: CompassProps) {
 
         {/* Compass Face - This rotates with device */}
         <div 
-          className="absolute inset-4 rounded-full bg-gradient-to-br from-white to-gray-50 shadow-inner transition-transform duration-300 ease-out"
-          style={{ transform: `rotate(${-deviceHeading}deg)` }}
+          className="absolute inset-4 rounded-full bg-gradient-to-br from-white to-gray-50 shadow-inner"
+          style={{ 
+            transform: `rotate(${-deviceHeading}deg)`,
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
         >
           {/* Direction Markers */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
@@ -114,18 +117,12 @@ export default function Compass({ rotation, deviceHeading }: CompassProps) {
           </svg>
         </div>
 
-        {/* Fixed North indicator */}
-        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-          <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-            N
-          </div>
-        </div>
-
         {/* Utopia direction indicator */}
         <div 
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
           style={{ 
-            transform: `rotate(${rotation}deg)`
+            transform: `rotate(${rotation}deg)`,
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
           <div className="absolute -top-8 bg-utopia-yellow text-utopia-dark text-xs px-3 py-1 rounded-full font-bold shadow-lg">
