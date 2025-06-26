@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
-import Compass from './components/Compass.tsx'
-import InfoCards from './components/InfoCards.tsx'
+import Compass from './components/Compass'
+import InfoCards from './components/InfoCards'
 import './index.css'
 
 // Utopia Lüneburg coordinates
@@ -12,22 +12,38 @@ function App() {
   const [bearing, setBearing] = useState<string>('Kalibriere...')
   const [compassRotation, setCompassRotation] = useState<number>(0)
   const [status, setStatus] = useState<string>('Initialisiere...')
+  const [targetBearing, setTargetBearing] = useState<number>(0)
+  const [deviceHeading, setDeviceHeading] = useState<number>(0)
+  const [showPermissionButton, setShowPermissionButton] = useState(false)
 
   useEffect(() => {
-    // Check for iOS and request permission
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      requestIOSPermission()
+    // Check for iOS and show permission button
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && 
+        typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+      setShowPermissionButton(true)
     }
 
     initGeolocation()
     initOrientation()
   }, [])
 
+  // Calculate needle rotation whenever device heading or target bearing changes
+  useEffect(() => {
+    // The needle should point to the relative direction of Utopia
+    // Needle rotation = target bearing - device heading
+    const needleRotation = targetBearing - deviceHeading
+    setCompassRotation(needleRotation)
+  }, [deviceHeading, targetBearing])
+
   const requestIOSPermission = async () => {
     if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
       try {
         const response = await (DeviceOrientationEvent as any).requestPermission()
-        if (response !== 'granted') {
+        if (response === 'granted') {
+          window.addEventListener('deviceorientation', handleOrientation)
+          window.addEventListener('deviceorientationabsolute', handleOrientation)
+          setStatus('Kompass aktiv')
+        } else {
           setStatus('Kompass-Zugriff verweigert')
         }
       } catch (error) {
@@ -55,7 +71,15 @@ function App() {
 
   const initOrientation = () => {
     if ('DeviceOrientationEvent' in window) {
-      window.addEventListener('deviceorientation', handleOrientation)
+      // Check if we need permission (iOS 13+)
+      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        // Permission will be requested via button click on iOS
+        setStatus('Tippe für Kompass-Zugriff')
+      } else {
+        // Android or older iOS - just add the listener
+        window.addEventListener('deviceorientation', handleOrientation)
+        window.addEventListener('deviceorientationabsolute', handleOrientation)
+      }
     } else {
       setStatus('Kompass nicht verfügbar')
     }
@@ -70,15 +94,29 @@ function App() {
     
     setDistance(formatDistance(dist))
     setBearing(`${Math.round(bear)}° ${getCompassDirection(bear)}`)
+    setTargetBearing(bear)
     setStatus('GPS aktiv')
   }, [])
 
   const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
-    if (event.alpha !== null) {
-      const deviceHeading = 360 - event.alpha
-      // You'll need to combine this with the bearing to Utopia
-      setCompassRotation(deviceHeading)
+    // Get compass heading
+    let heading = 0
+    
+    // Cast to any to access webkit properties
+    const evt = event as any
+    
+    if (event.absolute && event.alpha !== null) {
+      // If we have absolute orientation (Android)
+      heading = 360 - event.alpha
+    } else if (evt.webkitCompassHeading !== undefined) {
+      // iOS with webkitCompassHeading
+      heading = evt.webkitCompassHeading
+    } else if (event.alpha !== null) {
+      // Fallback to alpha
+      heading = 360 - event.alpha
     }
+    
+    setDeviceHeading(heading)
   }, [])
 
   const handleError = (error: GeolocationPositionError) => {
@@ -93,6 +131,11 @@ function App() {
         setStatus('GPS-Timeout')
         break
     }
+  }
+
+  const handlePermissionClick = () => {
+    requestIOSPermission()
+    setShowPermissionButton(false)
   }
 
   return (
@@ -113,6 +156,16 @@ function App() {
           </div>
         </div>
 
+        {/* iOS Permission Button */}
+        {showPermissionButton && (
+          <button
+            onClick={handlePermissionClick}
+            className="mb-6 px-8 py-3 bg-utopia-orange text-white rounded-full font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+          >
+            🧭 Kompass aktivieren
+          </button>
+        )}
+
         {/* Compass */}
         <Compass rotation={compassRotation} />
 
@@ -129,6 +182,13 @@ function App() {
         {/* Status */}
         <div className="mt-4 px-4 py-2 bg-white/80 rounded-full text-xs text-gray-600 text-center">
           {status}
+        </div>
+
+        {/* Debug Info - Remove in production */}
+        <div className="mt-2 px-4 py-2 bg-white/60 rounded-lg text-xs text-gray-500 text-center space-y-1">
+          <div>Device Heading: {Math.round(deviceHeading)}°</div>
+          <div>Target Bearing: {Math.round(targetBearing)}°</div>
+          <div>Needle Rotation: {Math.round(compassRotation)}°</div>
         </div>
       </main>
     </div>
