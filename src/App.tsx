@@ -185,11 +185,11 @@ function App() {
         </div>
 
         {/* Debug Info - Remove in production */}
-        <div className="mt-2 px-4 py-2 bg-white/60 rounded-lg text-xs text-gray-500 text-center space-y-1">
+        {/* <div className="mt-2 px-4 py-2 bg-white/60 rounded-lg text-xs text-gray-500 text-center space-y-1">
           <div>Device Heading: {Math.round(deviceHeading)}°</div>
           <div>Target Bearing: {Math.round(targetBearing)}°</div>
           <div>Needle Rotation: {Math.round(compassRotation)}°</div>
-        </div>
+        </div> */}
       </main>
     </div>
   )
