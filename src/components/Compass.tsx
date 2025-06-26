@@ -15,7 +15,7 @@ export default function Compass({ rotation, deviceHeading }: CompassProps) {
           className="absolute inset-4 rounded-full bg-gradient-to-br from-white to-gray-50 shadow-inner"
           style={{ 
             transform: `rotate(${-deviceHeading}deg)`,
-            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
           {/* Direction Markers */}
@@ -79,7 +79,7 @@ export default function Compass({ rotation, deviceHeading }: CompassProps) {
           className="absolute inset-4 flex items-center justify-center pointer-events-none"
           style={{ 
             transform: `rotate(${rotation}deg)`,
-            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
           <svg className="w-full h-full" viewBox="0 0 200 200">
@@ -122,7 +122,7 @@ export default function Compass({ rotation, deviceHeading }: CompassProps) {
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
           style={{ 
             transform: `rotate(${rotation}deg)`,
-            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
           <div className="absolute -top-8 bg-utopia-yellow text-utopia-dark text-xs px-3 py-1 rounded-full font-bold shadow-lg">
